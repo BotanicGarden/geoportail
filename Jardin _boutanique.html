@@ -1,0 +1,1013 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>webmapping</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="Control.Coordinates.css" />
+    
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <link rel="stylesheet" href="Leaflet.PolylineMeasure.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="Leaflet.PolylineMeasure.js"></script>
+        <link rel="stylesheet" href="leaflet-search.css" />
+            <link rel="stylesheet" href="style.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-2021.css">
+        <link rel="stylesheet" type="text/css" href="leaflet.L.Control.ZoomBar.css"/>
+        <script type="text/javascript" src="leaflet.L.Control.ZoomBar.js"></script>
+        
+        
+        <script src="leaflet-search.js"></script>
+        <script src="boutanique.geojson" type="text/javascript" ></script>
+        <link href='dist/leaflet.fullscreen.css' rel='stylesheet' />
+        <script src='dist/Leaflet.fullscreen.min.js'></script>
+        <script src="geolet.js"></script>
+        <link rel="stylesheet" href="menuStyle.css" />
+       
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="leaflet.browser.print.js"></script>
+<script src="Control.Coordinates.js"></script>
+<link href="iconLayers.css" rel="stylesheet"  />
+<script src="iconLayers.js"></script>
+<script src="leaflet.geolet.js"></script>
+
+<script src="providers.js"  type="text/javascript" ></script>
+<link rel="stylesheet" href="//cliffcloud.github.io/Leaflet.LocationShare/deps/leaflet.css" />
+  <script src="//cliffcloud.github.io/Leaflet.LocationShare/deps/leaflet.js"></script>
+  <script src='Leaflet.LocationShare.js'></script>
+ 
+
+    
+        <style>
+            
+            body {padding: 0; margin: 0;}
+            html, body, #map {height: 100%; margin: 0;}
+            
+            #jsonresp {
+	width:10em;
+	min-height:10.5em;
+	margin-left:1em;
+	padding:.25em;
+	overflow-y:scroll;
+	float:left;
+	background:rgb(255, 255, 255);;
+	border:1px solid #aaa;
+	box-shadow: 2px 2px 6px #999;
+	color:rgb(255, 255, 255);
+}
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+       
+.info h4 {
+    margin: 0 0 7px;
+    color: #777;
+}
+
+li{
+    color: #666;
+}
+.square{
+    display:block;
+    text-decoration: none;
+
+}
+
+.w3-button{
+padding: 0.1px;
+margin: 4px;
+}
+.hr1{
+  border: none;
+  height: 1px;
+  background: black;
+  margin-top: 3px;
+   }
+   #getZoomButton {
+                position: absolute;
+                top: 18px;
+                left: 20px;
+                z-index: 1001;
+            }  
+ .button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 17px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #db9833;
+  background-color: #a6d3a7;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #3e8e41}
+
+.button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+h12{
+    text-align: center;
+}
+        </style>
+
+      
+    </head>
+
+    <body>
+    
+       
+        <div id="map"  style="width:1010px; height: 650px; position:absolute; top:0px; right: 0px"></div>
+      
+            
+            <script>
+          
+                var map = new L.Map ('map', {
+             fullscreenControl: {
+             pseudoFullscreen: false
+            }
+            
+      }).setView ([34.00786109991355, -6.845850123688417], 18);
+      
+      
+       
+        let polylineMeasure = L.control.polylineMeasure ({position:'topleft', unit:'kilometres', showBearings:true, clearMeasurementsOnStop: false, showClearControl: true, showUnitControl: true})
+                polylineMeasure.addTo (map);
+                
+        var layerOsm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map);
+         
+    
+    L.control.scale ({maxWidth:240, metric:true, imperial:false, position: 'bottomleft'}).addTo (map);
+    L.geolet({
+                position: 'bottomright'
+                }).addTo(map);
+       
+             
+    
+    
+                function getColor(name) {
+            return name == "Rare Plants" ? '#122A0A' :
+            
+                   name == "Scent Garden"  ? '#173B0B' :
+                   name == "Avocado Trees"  ? '#D0F5A9' :
+                   name == "Palm Grove" ? '#298A08' :
+                   name == "Orchard of Morocco and Spanish Exchanges" ? '#16B84E' :
+                   name == "Moorish Pavilion" ? '#3ADF00' :
+                   name == "Exotic Fruit Trees" ? '#01DF3A' : 
+                   name == "Local and Endemic plants" ? '#9FF781' :
+                   name == "Aromatic and Medicinal Plants" ? '#0B3B24' :
+                   name == "Plants with Social and Economic Importance" ? '#4B8A08' :
+                   name == "Futury Exhibition Greenhouses" ? '#74DF00' :
+                   name == "INRA Obtainings"  ? '#228B22' :
+                   name == "Agro-museum" ? '#298A08' :
+                   name == "Eucalyptus"  ? '#C8FE2E' :
+                   name == "Bamboo Plantation"  ? '#4B610B' :
+                   name == "Climbing And Voluble Plants"  ? '#175732' :
+                   name == "Fruit Trees" ? '#4B8A08':
+                   name == "Pecan Trees"   ? '#31B404' :
+                   name == "Stralezia And Plants Of Shade" ? '#095228':
+                   name == "Conifers"   ? '#21610B': 
+		           name == "Flowering Perennial Garden" ? '#00FF7F' :
+                   name == "Unknown" ? '#00FF00' :
+		           name == "Cactus And Succulent Plants" ? '#74DF00' :
+		          name == "Pomegranate And Mediterranean Plants" ? '#01D758'  :
+		          name == "Arboretum" ? '#3ADF00':
+		           name == "Aninier Trees" ? '#40FF00': 
+                   name == "Andalusian Garden" ? '#74DF00':
+                   '#21610B';
+                }
+                function styleFeature(Feature) {
+            return {
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7,
+                fillColor: getColor(Feature.properties.name)
+            };
+        }
+        function highlightFeature(e) {
+        var layer = e.target;
+    
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.2
+        });
+        layer.bringToFront();
+    }
+    
+    var myGeojson = L.geoJson(jard, {
+        style: styleFeature,
+        onEachFeature: onEachFeature
+    }).addTo(map);
+    
+    
+    function resetHighlight(e) {
+        myGeojson.resetStyle(e.target);
+        info.update();
+    }
+    
+    
+    function zoomToFeature(e) {
+        map.fitBounds(e.target.getBounds());
+    }
+    
+    function onEachFeature(Feature, layer) {
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: zoomToFeature
+        });
+    }
+     
+    
+                var info = L.control();
+    
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+        this.update();
+        return this._div;
+    };
+    
+    // method that we will use to update the control based on feature properties passed
+    info.update = function (props) {
+        this._div.innerHTML =   (props ?
+            '<b>' + props.name + '</b>' 
+            : '<b>BOTANIC GARDEN</b>');
+    };
+    
+    info.addTo(map);
+    
+    function highlightFeature(e) {
+        var layer = e.target;
+    
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.2
+        });
+    
+        layer.bringToFront();
+        info.update(layer.feature.properties);
+    }
+    
+    function resetHighlight(e) {
+        myGeojson.resetStyle(e.target);
+        myGeojsonT.resetStyle(e.target);
+        info.update(layer.feature.properties);
+    }
+    
+    
+        
+    
+                function debugevent(e) { console.debug(e.type, e, polylineMeasure._currentLine) }
+    
+                map.on('polylinemeasure:toggle', debugevent);
+                map.on('polylinemeasure:start', debugevent);
+                map.on('polylinemeasure:resume', debugevent);
+                map.on('polylinemeasure:finish', debugevent);
+                map.on('polylinemeasure:change', debugevent);
+                map.on('polylinemeasure:clear', debugevent);
+                map.on('polylinemeasure:add', debugevent);
+                map.on('polylinemeasure:insert', debugevent);
+                map.on('polylinemeasure:move', debugevent);
+                map.on('polylinemeasure:remove', debugevent);
+                
+    
+                var greenIcon = L.icon({
+            iconUrl: 'speech-bubble.png',
+            iconSize:     [10, 10], // size of the icon
+           //	shadowSize:   [50, 64], // size of the shadow
+                iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+               //shadowAnchor: [4, 62],  // the same for the shadow
+              popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+               });
+    
+               var marker = L.marker([34.008498, -6.848133], {icon: greenIcon}, id='rem').addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Punicacaeae <br>Punica garantum <br> </p></b><div style="text-align:center"><img width="150" height="150" src="1m.jpg"" ></div> <b><p style="text-align:center">Bassin méditerranéen</p></b>').openPopup();
+	
+
+	var marker = L.marker([34.008693, -6.847297], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosaceae<br>Rosie Double Delight</p></b><div style="text-align:center"><img width="150" height="150" src="2m.jpg"" ></div> <b><p style="text-align:center">Australie</p></b>').openPopup();
+
+
+	var marker = L.marker([34.008695, -6.847298], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosaceae<br>Rosier gitane panaché</p></b><div style="text-align:center"><img width="150" height="150" src="3m.jpg"" ></div><b> <p style="text-align:center">Australie</p></b>').openPopup();
+
+
+	var marker = L.marker([34.008321, -6.846259], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Moraceae <br>Ficus microcarpa</p></b><div style="text-align:center"><img width="150" height="150" src="4m.jpg"" ></div> <b><p style="text-align:center">Australie</p></b>').openPopup();
+
+
+	var marker = L.marker([34.008409, -6.846584], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Moraceae <br> Ficus microcarpa <br> </p></b><div style="text-align:center"><img width="150" height="150" src="4m.jpg"" ></div> <b><p style="text-align:center">Se Asie</p></b>').openPopup();
+
+
+	var marker = L.marker([34.008554, -6.847360], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Asphodelacea<br>Aloe glauca<br></p></b><div style="text-align:center"><img width="150" height="150" src="5m.jpg"" ></div><b> <p style="text-align:center">Afrique sud</p></b>').openPopup();
+
+
+	var marker = L.marker([34.008584, -6.847340], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Agavaceae<br>Agave sislana<br>  </p></b><div style="text-align:center"><img width="150" height="150" src="6m.jpg"" ></div> <b><p style="text-align:center">Mexique</p></b>').openPopup();
+
+
+	var marker = L.marker([34.008554, -6.847360], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Liliacea <br> Yucca aloifolia <br>  </p></b><div style="text-align:center"><img width="150" height="150" src="7m.jpg"" ></div> <b><p style="text-align:center">Mexique</p></b>').openPopup();
+
+	var marker = L.marker([34.008594, -6.847390], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Asphodelacea<br> Aloea glauca <br></p></b><div style="text-align:center"><img width="150" height="150" src="5m.jpg"" ></div> <b><p style="text-align:center">Afrique sud</p></b>').openPopup();
+
+	var marker = L.marker([34.008533, -6.847185], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Cactaceae <br>Cereus peruvianus </p></b><div style="text-align:center"><img width="150" height="150" src="8m.jpg"" ></div><b> <p style="text-align:center">Amerique Sud</p>').openPopup();
+
+	var marker = L.marker([34.008397, -6.847296], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Agavacea <br>Yucca filamentosa</p></b><div style="text-align:center"><img width="150" height="150" src="9m.jpg"" ></div> <b><p style="text-align:center">Afrique sud</p></b>').openPopup();
+
+	var marker = L.marker([34.008385, -6.847265], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Asphodelacea <br>Aloe glauca </p></b><div style="text-align:center"><img width="150" height="150" src="5m.jpg"" ></div> <b><p style="text-align:center">Afrique sud</p></b>').openPopup();
+
+	var marker = L.marker([34.008367, -6.847276], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Agavaceae<br> Agave sisalana</p></b><div style="text-align:center"><img width="150" height="150" src="6m.jpg"" ></div> <b><p style="text-align:center"> Mexique</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008390, -6.847286], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Sapotaceae <br>Arganie <br></p></b><div style="text-align:center"><img width="150" height="150" src="10m.jpg"" ></div><b> <p style="text-align:center">Maroc</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008419, -6.847187], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Asphodelaceae <br>Aloea arboresens <br></p></b><div style="text-align:center"><img width="150" height="150" src="11m.jpg"" ></div> <b><p style="text-align:center">Afrique-Australie</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008416, -6.847182], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Asphodelaceae <br>Aloea ferox <br></p></b><div style="text-align:center"><img width="150" height="150" src="12m.jpg"" ></div> <b><p style="text-align:center">Afrique sud</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008414, -6.847179], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Agavaceae<br> Agave feros<br> </p></b><div style="text-align:center"><img width="150" height="150" src="13m.jpg"" ></div> <b><p style="text-align:center">Mexique </p></b><br />').openPopup();
+
+
+	var marker = L.marker([34.008432, -6.847134], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Asphodelaceae <br>Aloe ciliaris <br></p></b><div style="text-align:center"><img width="150" height="150" src="14m.jpg"" ></div><b> <p style="text-align:center">Afrique Sud<p></b><br />').openPopup();
+
+	var marker = L.marker([34.008571, -6.847014], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Luliaceae <br>Yucca elephantipes <br></p></b><div style="text-align:center"><img width="150" height="150" src="15m.jpg"" ></div> <b><p style="text-align:center">Mexique</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008395, -6.847059], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Bignoniaceae<br> Jacaranda mimosifilia<br> </p></b><div style="text-align:center"><img width="150" height="150" src="1m.jpg"" ></div><b> <p style="text-align:center">Bresil</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008385, -6.847049], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Oleacaea<br> Jasmin nudiflurum <br></p></b><div style="text-align:center"><img width="150" height="150" src="16m.jpg"" ></div><b> <p style="text-align:center">Chine</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008385, -6.847049], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Lagumineuse <br>Bauhinia purpurea <br></p></b><div style="text-align:center"><img width="150" height="150" src="17m.jpg"" ></div> <b><p style="text-align:center">Inde-chine </p></b><br />').openPopup();
+
+	var marker = L.marker([34.008369, -6.848031], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Malvacaea<br> Malvaviscus arboreus<br> </p></b><div style="text-align:center"><img width="150" height="150" src="18m.jpg"" ></div> <b><p style="text-align:center">Mexique</p></b><br />').openPopup();
+
+
+
+	var marker = L.marker([34.008444, -6.848220], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Oleaceae<br> Jasminum mesnyi<br> </p></b><div style="text-align:center"><img width="150" height="150" src="19m.jpg"" ></div> <b><p style="text-align:center">Ouest de la chine</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008630, -6.848348], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Moracaea<br> Ficus microcarpa<br> </p></b><div style="text-align:center"><img width="150" height="150" src="4m.jpg"" ></div> <b><p style="text-align:center">Se Asie</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008872, -6.848392], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Moraceae<br> Ficus microcarpa<br> </p></b><div style="text-align:center"><img width="150" height="150" src="4m.jpg"" ></div><b> <p style="text-align:center">Se Asie</p></b><br />').openPopup();
+
+	var marker = L.marker([34.009709, -6.848372], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Jasminium mesnyi<br> </p></b><div style="text-align:center"><img width="150" height="150" src="19m.jpg"" ></div> <b><p style="text-align:center">Ouest de la cure</p></b><br />').openPopup();
+
+	
+	var marker = L.marker([34.008997, -6.848675], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Myrtaceae<br> Callistemon viminalis <br></p></b><div style="text-align:center"><img width="150" height="150" src="20m.jpg"" ></div> <b><p style="text-align:center">Australie</p></b><br />').openPopup();
+
+	var marker = L.marker([34.008909, -6.848545], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosaceae <br>Prunus cerasifera<br></p></b><div style="text-align:center"><img width="150" height="150" src="21m.jpg"" ></div> <b><p style="text-align:center"> Caucase</p></b><br />').openPopup();
+
+	var marker = L.marker([34.009003, -6.848430], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Lyhraceace <br>Lagestroemia speciosa <br></p></b><div style="text-align:center"><img width="150" height="150" src="22m.jpg"" ></div> <b><p style="text-align:center">Malaisie</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010100, -6.849662], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Euphorbiaceae <br>Acalypha wilkesana<br></p></b><div style="text-align:center"><img width="150" height="150" src="23m.jpg"" ></div> <b><p style="text-align:center"> Iles fudu</p></b><br />').openPopup();
+
+	var marker = L.marker([34.009951, -6.850070], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Apocynaceae<br> Thevetia peruviana <br></p></b><div style="text-align:center"><img width="150" height="150" src="24m.jpg"" ></div> <b><p style="text-align:center">Perou</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010644, -6.849465], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosaceae<br>Rosa roadruner<br></p></b><div style="text-align:center"><img width="150" height="150" src="29m.jpg"" ></div> <b><p style="text-align:center"> Europe centrale</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010624, -6.849445], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center "> Lauraceae <br>Laurus nobilis <br></p></b><div style="text-align:center"><img width="150" height="150" src="25m.jpg"" ></div> <b><pstyle="text-align:center">Europe méridionale </p></b><br />.').openPopup();
+
+
+
+	var marker = L.marker([34.010640, -6.849440], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center "> Lamiacaea<br> Lavandula officinalis <br></p></b><div style="text-align:center"><img width="150" height="150" src="26m.jpg"" ></div> <b><p style="text-align:center">Méditerranée</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010636, -6.849436], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Punicacaeae <br>Punica granatum <br></p></b><div style="text-align:center"><img width="150" height="150" src="1m.jpg"" ></div> <b><p style="text-align:center">Bassin méditerranée  </p></b><br />').openPopup();
+
+	var marker = L.marker([34.010609, -6.849454], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Brassicacea <br>Mathiola incana <br></p></b><div style="text-align:center"><img width="150" height="150" src="27m.jpg"" ></div> <b><p style="text-align:center">Europe méridionale</p></b><br />').openPopup();
+
+	
+
+	var marker = L.marker([34.010684, -6.849374], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Lamiaceae <br>Salvia officinalis<br> </p></b><div style="text-align:center"><img width="150" height="150" src="28m.jpg"" ></div> <b><p style="text-align:center">Bassin méditerranée</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010751, -6.849404], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosaceae<br> Rose rubiginosa<br></p></b><div style="text-align:center"><img width="150" height="150" src="30m.jpg"" ></div> <b><p style="text-align:center"> Europe centrale</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010747, -6.849450], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Oleaceae <br>Olea europaea<br> </p></b><div style="text-align:center"><img width="150" height="150" src="31m.jpg"" ></div> <b><p style="text-align:center">Asie mineure</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010732, -6.849410], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Lamiaceae<br> Lavandula officinalis<br> </p></b><div style="text-align:center"><img width="150" height="150" src="26m.jpg"" ></div> <b><pstyle="text-align:center">Pourtour méditerranée</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010759, -6.849405], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Lamiaceae <br>Lavendula dentata<br></p></b><div style="text-align:center"><img width="150" height="150" src="32m.jpg"" ></div> <b><p style="text-align:center"> Méditerranée</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010784, -6.849372], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Oléaceae<br> Jasminum sambac <br></p></b><div style="text-align:center"><img width="150" height="150" src="33m.jpg"" ></div> <b><p style="text-align:center">Inde</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010813, -6.849391], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rutaceae <br>Citrus limon <br></p></b><div style="text-align:center"><img width="150" height="150" src="34m.jpg"" ></div> <b><p style="text-align:center">lnde</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010855, -6.849420], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Myrtaceae <br>Myrtis communis<br> </p></b><div style="text-align:center"><img width="150" height="150" src="35m.jpg"" ></div> <b><p style="text-align:center">Europe méridionale</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010832, -6.849466], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Iridaceae<br> Iris germanica<br></p></b><div style="text-align:center"><img width="150" height="150" src="36m.jpg"" ></div> <b><p style="text-align:center"> Hybride</p></b><br />').openPopup();
+		
+
+	var marker = L.marker([34.010978, -6.850074], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Arecacaeae <br>Butia capitata <br></p></b><div style="text-align:center"><img width="150" height="150" src="37m.JPG"" ></div> <b><p style="text-align:center">Sud Amérique</p></b><br />').openPopup();
+
+	var marker = L.marker([34.011062, -6.850180], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Arecaceae <br>Hypophorbe verschaffeltil <br></p></b><div style="text-align:center"><img width="150" height="150" src="38m.jpg"" ></div> <b><p style="text-align:center">En rodrigues</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010820, -6.850466], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Caesalpiniaceae <br>Gledista triacanthos <br></p></b><div style="text-align:center"><img width="150" height="150" src="39m.jpg"" ></div> <b><p style="text-align:center">Canada</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010640, -6.850368], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosaceae<br> Raphiolepis indica <br></p></b><div style="text-align:center"><img width="150" height="150" src="40m.jpg"" ></div> <b><p style="text-align:center">Japon</p></b><br />').openPopup();
+
+
+
+	var marker = L.marker([34.010366, -6.850644], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Agavaceae <br>Yucca elephantipes <br></p></b><div style="text-align:center"><img width="150" height="150" src="15m.jpg"" ></div> <b><p style="text-align:center">Mexique</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010267, -6.850725], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Moraceae <br>Maclura tricupideta <br></p></b><div style="text-align:center"><img width="150" height="150" src="41m.jpg"" ></div> <b><p style="text-align:center">Chine</p></b><br />').openPopup();
+
+	var marker = L.marker([34.009898, -6.850647], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Malvaceae<br> Lagunaria pattersonii <br></p></b><div style="text-align:center"><img width="150" height="150" src="42m.jpg"" ></div> <b><p style="text-align:center">Australia</p></b><br />').openPopup();
+
+
+		
+	var marker = L.marker([34.010051, -6.850445], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosacaea <br> Prunus cerasifera <br></p></b><div style="text-align:center"><img width="150" height="150" src="21m.jpg"" ></div> <b><p style="text-align:center">Caucase</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.010051, -6.850445], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Bignonaceae<br> Spathodea cpanulata<br> </p></b><div style="text-align:center"><img width="150" height="150" src="43m.jpg"" ></div> <b><p style="text-align:center">Amérique tropical</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.009935, -6.850197], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Sterculiacaea<br> Brachychiton rupestris<br></p></b><div style="text-align:center"><img width="150" height="150" src="44m.jpg"" ></div><b><p style="text-align:center"> Queesland</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.010097, -6.849842], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Sctanaceae<br> Datura arborea <br></p></b><div style="text-align:center"><img width="150" height="150" src="45m.jpg"" ></div> <b><p style="text-align:center">Pérou</p></b><br />').openPopup();
+		
+		
+	
+	var marker = L.marker([34.010725, -6.849191], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosaceae <br>Prunus cerasifera <br></p></b><div style="text-align:center"><img width="150" height="150" src="21m.jpg"" ></div> <b><p style="text-align:center">Caucase</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.010779, -6.849078], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Ulmaceae <br<Celtis australis<br></p></b><div style="text-align:center"><img width="150" height="150" src="46m.jpg"" ></div> <b><p style="text-align:center"> Amérique</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.011056, -6.849187], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Hydrangeaceae <br>Hydrangea macrophylla<br></p></b><div style="text-align:center"><img width="150" height="150" src="47m.jpg"" ></div> <b><p style="text-align:center"> Japon</p></b><br />').openPopup();
+
+	var marker = L.marker([34.011001, -6.849157], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Commelinaceae <br>Tradescantia pallida <br></p></b><div style="text-align:center"><img width="150" height="150" src="48m.jpg"" ></div> <b><p style="text-align:center">Mexique</p></b><br />').openPopup();
+		 
+	var marker = L.marker([34.011000, -6.849124], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Caprifoliac<br> Vibirnum tinus <br></p></b><div style="text-align:center"><img width="150" height="150" src="49m.jpg"" ></div> <b><p style="text-align:center">Bassin méditerranée</p></b><br />').openPopup();
+		
+	
+		
+	var marker = L.marker([34.010919, -6.849087], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Punicacaeae <br>Punica garatum<br></p></b><div style="text-align:center"><img width="150" height="150" src="1m.jpg"" ></div> <b><p style="text-align:center"> Méditerranée</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.010905, -6.849134], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rudaceae<br> Citrus auratium <br></p></b><div style="text-align:center"><img width="150" height="150" src="50m.jpg"" ></div> <b><p style="text-align:center">Asie SE</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.010848, -6.849371], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Apocynaceae <br>Nerium oleander<br></p></b><div style="text-align:center"><img width="150" height="150" src="51m.jpg"" ></div> <b><p style="text-align:center"> Bassin méditerranéen</p></b><br />').openPopup();
+		
+	var marker = L.marker([34.010958, -6.849632], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Fabaceae <br>Cercis seliquastrum <br></p></b><div style="text-align:center"><img width="150" height="150" src="52m.jpg"" ></div> <b><p style="text-align:center">Region méditerranéene </p></b><br />').openPopup();
+		
+	var marker = L.marker([34.010940, -6.849533], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Papillionaceae <br>Erythrina crista-gallii <br></p></b><div style="text-align:center"><img width="150" height="150" src="53m.jpg"" ></div> <b><p style="text-align:center">Bresil</p></b><br />').openPopup();
+
+	var marker = L.marker([34.010985, -6.849448], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Asteraceae <br>Dimorphoteca barberiae <br></p></b><div style="text-align:center"><img width="150" height="150" src="54m.jpg"" ></div> <b><p style="text-align:center">Afrique Australe</p></b><br />').openPopup();
+
+
+	var marker = L.marker([334.010982, -6.848710], {icon: greenIcon}).addTo(map)
+		.bindPopup('<b><p style="text-align:center ">Rosacaae  <br>Eriobotrya japonica<br></p></b><div style="text-align:center"><img width="150" height="150" src="55m.jpg"" ></div> <b><p style="text-align:center"> Chine Japon</p></b><br />').openPopup();
+
+            var marker = L.marker([34.008803, -6.846231], {icon: greenIcon}).addTo(map).bindPopup('<b><p style="text-align:center ">Proteaceae grevillea robusta</p></b><div style="text-align:center"><img width="150" height="150" src="1.jpg"" ></div> <b><p style="text-align:center">Australie</p></b>').openPopup();
+            var A = L.marker([34.008592, -6.846406], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center">Moraceae   ficus macrophylla</p></b><div style="text-align:center "><img width="150" height="150" src="2.jpg"" ></div><b><p style="text-align:center">Australie</p></b>').openPopup();
+            var B = L.marker([34.008870, -6.847046], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Moraceae  ficus macrophylla </p></b><div style="text-align:center "><img width="150" height="150" src="2.jpg"" ></div><b><p style="text-align:center">Australie</p></b>').openPopup();
+            var C = L.marker([34.008925, -6.847177], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Juglandaceae   carya olivaeformis </p></b><div style="text-align:center "><img width="150" height="150" src="4.jpg"" ></div><b><p style="text-align:center">Amérique du Nord</p></b>').openPopup();
+            var D = L.marker([34.009009, -6.847325], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Lauraceae   cinnamomum camphora </p></b><div style="text-align:center "><img width="150" height="150" src="5.jpg"" ></div><b><p style="text-align:center">Japon</p></b>').openPopup();
+            var E = L.marker([34.009265, -6.847161], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Lauraceae   cinnamomum camphora </p></b><div style="text-align:center "><img width="150" height="150" src="5.jpg"" ></div><b><p style="text-align:center">Japon</p></b>').openPopup();
+            var F = L.marker([34.009196, -6.847294], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Apocynaceae   carissa grandiflora </p></b><div style="text-align:center "><img width="150" height="150" src="7.jpg"" ></div><b><p style="text-align:center"> Afrique du Sud</p></b>').openPopup();
+            var G = L.marker([34.009309, -6.847262], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Arecaceae    sabal    palmetto </p></b> <div style="text-align:center "><img width="150" height="150" src="8.jpg"" ></div><b><p style="text-align:center"><h4 style="text-align:center">Inde Occidentale</p></b>').openPopup() 
+            var H = L.marker([34.009383, -6.847304], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Ebenaceae   diospyros    kaki </p> </b><div style="text-align:center "><img width="150" height="150" src="9.jpg"" ></div><b><p style="text-align:center"> Chine</p></b>').openPopup();
+            var I = L.marker([34.009405, -6.847657], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Punicaceae   punica   granatum  </p></b> <div style="text-align:center "><img width="150" height="150" src="10.jpg"" ></div><b><p style="text-align:center"> Méditerranée</p></b>').openPopup();
+            var J = L.marker([34.009705, -6.848104], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Apocynaceae  strophantus   speciosus </p> <div style="text-align:center "><img width="150" height="150" src="11.jpg"" ></div> <b><p style="text-align:center">Afrique Sud</p></b>').openPopup();
+            var K = L.marker([34.009627, -6.848377], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Oleaceae    jasminum    mesnyi  </p></b><div style="text-align:center "><img width="150" height="150" src="12.jpg"" ></div><b><p style="text-align:center">Ouest de la Chine</p></b>' ).openPopup();
+            var LA = L.marker([34.009183, -6.848893], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Apocynaceae    rauvolfia    caffra  </p> </b> <div style="text-align:center "><img width="150" height="150" src="13.jpg"" ></div><b><p style="text-align:center"> Sud</p></b>').openPopup();
+            var M = L.marker([34.009026, -6.848574], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Araliaceae   hedera   glacier </p> </b> <div style="text-align:center "><img width="150" height="150" src="14.jpg"" ></div><b><p style="text-align:center">Asie Occidentale</p></b>').openPopup();
+            var N = L.marker([34.008973, -6.848426], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Tamaricaceae   tamarix   aphylla</p> </b> <div style="text-align:center "><img width="150" height="150" src="15.jpg"" ></div><b><p style="text-align:center"> Nord-Est Afrique</p></b>').openPopup();
+            var O = L.marker([34.010122, -6.849858], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Arecaceae     kentia  belmoreana</p> </b> <div style="text-align:center "><img width="150" height="150" src="16.jpg"" ></div><b> <p style="text-align:center">Îles Canaries</p></b>').openPopup();
+            var P = L.marker([34.010638, -6.849547], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Apocynaceae   nerium   oleander </p></b> <div style="text-align:center "><img width="150" height="150" src="17.jpg"" ></div><b><p style="text-align:center">Bassin Méditerranéen</p></b>').openPopup();
+            var Q = L.marker([34.010657, -6.849529], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Oleaceae  jasminum    officinale     Jasmine Blanc</p></b><div style="text-align:center "><img width="150" height="150" src="18.jpg"" ></div>').openPopup();
+            var R = L.marker([34.010685, -6.849492], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Lauraceae   laurus nobilis </p></b><div style="text-align:center "><img width="150" height="150" src="19.jpg"" ></div><b><p style="text-align:center">Europe Méridionale</p></b>').openPopup();
+            var S = L.marker([34.010729, -6.849455], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Vitaceae    parthenocissus   tricuspidata </p> <div style="text-align:center "><img width="150" height="150" src="20.jpg"" ></div><b><p style="text-align:center">Japon and Chine</p></b>').openPopup();
+            var T = L.marker([34.010706, -6.849498], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Rosa  Roter korsar</p></b><div style="text-align:center "><img width="150" height="150" src="21.jpg"" ></div>').openPopup();
+             var U = L.marker([34.010727, -6.849513], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Oleaceae olea   europaea </p></b><div style="text-align:center "><img width="150" height="150" src="22.jpg"" ></div><b><p style="text-align:center">Asie-Mineure</p></b>').openPopup();
+            var V = L.marker([34.010759, -6.849534], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Lamiaceae    origanum   vulgare </p></b> <div style="text-align:center "><img width="150" height="150" src="23.jpg"" ></div><b><p style="text-align:center">Méditerranée</p></b>').openPopup();
+    
+            var W = L.marker([34.010838, -6.849547], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Phynchospermaceae trachelospermum Jasminoides </p> </b><div style="text-align:center "><img width="150" height="150" src="24.jpg"" ></div> <b><p style="text-align:center">Chine</p></b>').openPopup();
+    
+            var X = L.marker([34.010760, -6.849601], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Myrtaceae    myrtus   communis  </p></b>  <div style="text-align:center "><img width="150" height="150" src="25.jpg"" ></div> <b> <p style="text-align:center">Europe Méridionale</p></b>').openPopup();
+    
+            var Y = L.marker([34.010689, -6.850527], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Hibiscus Sandariffa ( carcadé) </p></b><div style="text-align:center "><img width="150" height="150" src="26.jpg"" ></div>').openPopup();
+    
+            var Z = L.marker([34.010090, -6.850526], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Bignoniaceae   spathodia    campanulata </p> </b><div style="text-align:center "><img width="150" height="150" src="27.jpg"" ></div> <b><p style="text-align:center">  Afrique Tropicale</p></b>').openPopup();
+    
+            var a = L.marker([34.010140, -6.850670], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Bignoceae   spathodia   campanulata   </p></b> <div style="text-align:center "><img width="150" height="150" src="28.jpg"" ></div> <b><p style="text-align:center">Afrique Equatoriale</p></b>').openPopup();
+    
+            var b = L.marker([34.010076, -6.850626], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Anacardiaceae   schinus    terebenthfolius    </p></b><div style="text-align:center "><img width="150" height="150" src="29.jpg"" ></div><b> <p style="text-align:center">Amérique du Sud</p></b>').openPopup();
+    
+            var c = L.marker([34.010083, -6.850198], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Caesalpinaceae   Bauhinia    purpurea    </p> </b><div style="text-align:center "><img width="150" height="150" src="30.jpg"" ></div><b> <p style="text-align:center">bvinde and Chine</p></b>').openPopup();
+    
+            var d = L.marker([34.010131, -6.850043], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Strelitza</p></b><div style="text-align:center "><img width="150" height="150" src="31.jpg"" ></div>').openPopup();
+            var MA = L.marker([34.010448, -6.849144], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Strelitziaceae  strelitza   Augusta </p> </b><div style="text-align:center "><img width="150" height="150" src="32.jpg"" ></div> <b> <p style="text-align:center">Afrique du Sud</p></b>').openPopup();
+            var f = L.marker([34.010523, -6.848965], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Fabaceae  wisteria </p> </b> <div style="text-align:center "><img width="150" height="150" src="33.jpg"" ></div> <p style="text-align:center">chine</p></b>').openPopup();
+            var g = L.marker([34.010802, -6.849079], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Caprifoliaceae    Vinurnum   suspensum </p> </b> <div style="text-align:center "><img width="150" height="150" src="34.jpg"" ></div><b> <p style="text-align:center">Japon and Taiwan</p></b>').openPopup();
+            var h = L.marker([34.010903, -6.849169], {icon: greenIcon}).addTo(map)
+            .bindPopup('<b><p style="text-align:center ">Vitaceae    parthenocissus   tricuspidata </p></b><div style="text-align:center "><img width="150" height="150" src="35.jpg"" ></div><b> <p style="text-align:center"> Japon and Chine</p></b>').openPopup();
+    
+    
+        
+    
+            
+        function formatJSON(rawjson) {	//callback that remap fields name
+            var json = {},
+                key, loc, disp = [];
+    
+            for(var i in rawjson)
+            {
+                disp = rawjson[i].display_name.split(',');	
+    
+                key = disp[0] +', '+ disp[1];
+                
+                loc = L.latLng( rawjson[i].lat, rawjson[i].lon );
+                
+                json[ key ]= loc;	//key,value format
+            }
+            
+            return json;
+        }
+        
+        var searchOpts = {
+                url: 'http://nominatim.openstreetmap.org/search?format=json&q={s}',
+                jsonpParam: 'json_callback',
+                formatData: formatJSON,
+                zoom: 10,
+                minLength: 2,
+                autoType: false,
+                marker: {
+                    icon: false,
+                    animate: false
+                   
+                }
+            };
+         
+           
+        L.Control.geocoder().addTo(map);
+        var mapId=document.getElementById('map');
+       
+       L.control.browserPrint().addTo(map);
+       var hi = new L.Control.Coordinates();
+            hi.addTo(map);
+    
+            function onMapClick(e) {
+                hi.setCoordinates(e);
+            }
+    
+            map.on('click', onMapClick);
+            var layers = [];
+                for (var providerId in providers) {
+                    layers.push(providers[providerId]);
+                }
+    
+             L.control.iconLayers(layers).addTo(map);
+    
+            let flyingZoom=18;
+            if(device='phone'){
+                flyingZoom=15
+            };
+            let espece=document.getElementById("rem")
+
+                
+                
+                
+            </script>
+            <div class="container">
+                <nav>
+                        <ul class="mcd-menu">
+                           
+                            <li>
+                                <a href="" class="active">
+                                    <i class="fa fa-globe"></i>
+
+                                        <strong >Orchard of Morocco and spanish exchanges</strong>
+                                        
+                                    </a>
+                                    <ul>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Brassicacea Mathiola incana</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Lamiaceae Lavandula officinalis</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Lamiaceae Salvia officinalis</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Iridaceae Iris germanica</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Lauraceae Laurus nobilis</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Rosaceae Rosa roadruner</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Myrtaceae myrtus communis</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Lamiaceae origanum vulgare</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Oleaceae olea europaea</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Vitaceae parthenocissus tricuspidata</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Rosa Roter korsar</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Lauraceae laurus nobilis</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Oleaceae jasminum officinale Jasmine Blanc</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i>Apocynaceae nerium oleander</a></li>
+                                        <li><a href="#"><i class="fa fa-globe"></i> Phynchospermaceae trachelospermum Jasminoides</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Pomegranate and Mediterranean plants</strong>
+                                    
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Punicacaeae Punica garantum</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Oleaceae Jasminum mesnyi</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Malvacaea Malvaviscus arboreus</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                           
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Futury Exhibition Greenhouses</strong>
+                                    
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Agavaceae Yucca elephantipes</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Moraceae Maclura tricupideta</a></li>
+                                         
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Moorish pavillon</strong>
+                                    
+                                </a>
+                                <ul>
+                                
+                                    <li><a href="#"><i class="fa fa-globe"></i>Punicacaeae Punica garatum</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Hydrangeaceae Hydrangea macrophylla</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Rudaceae Citrus auratium</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Rosaceae Prunus cerasifera</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Hibiscus Sandariffa</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>       
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>stralezia and plants of shade</strong>
+                                    
+                                </a>
+                                <ul>
+                                    
+        
+                                    <li><a href="#"><i class="fa fa-globe"></i>Proteaceae grevillea robusta</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>
+                                        Moraceae ficus macrophylla</a></li>
+                            
+                                    
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>fruit trees</strong>
+                                    
+                                </a>
+                                <ul>
+                                    
+        
+                                    <li><a href="#"><i class="fa fa-globe"></i>Punicaceae punica granatum</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Ebenaceae diospyros kaki</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Arecaceae sabal palmetto</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>
+                                        Lauraceae cinnamomum camphora</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Lauraceae cinnamomum camphora</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                           
+                            
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>cactus and Succulent plants</strong>
+                                    
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Lagumineuse Bauhinia purpurea</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Bignoniaceae Jacaranda mimosifilia</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Asphodelaceae Aloe ciliaris</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Asphodelacea Aloe glauca</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Agavacea Yucca filamentosa</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Rosaceae Rosie Double Delight</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Luliaceae Yucca elephantipes
+                                    </a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Moorish pavillon</strong>
+                                    
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Hydrangeaceae Hydrangea macrophylla</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Commelinaceae Tradescantia pallida</a></li>
+                                      <li><a href="#"><i class="fa fa-globe"></i>Caprifoliac Vibirnum tinus</a></li>
+
+                                      <li><a href="#"><i class="fa fa-globe"></i>Rudaceae Citrus auratium</a></li>
+                                   <li><a href="#"><i class="fa fa-globe"></i>Punicacaeae Punica garatum</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Ulmaceae</a></li>
+                                 
+                                    <li><a href="#"><i class="fa fa-globe"></i>Vitaceae parthenocissus tricuspidata</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Caprifoliaceae Vinurnum suspensum</a></li>
+                               
+                                    
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Andalusian Garden</strong>
+                                
+                                </a>
+                            
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Apocynaceae Nerium oleander</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Myrtaceae Myrtis communis</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Oléaceae Jasminum sambac</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Rosaceae Rose rubiginosa</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Rutaceae Citrus limon</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Arboretum</strong>
+                                    
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Myrtaceae Callistemon viminalis</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Lyhraceace Lagestroemia speciosa</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Rosaceae Prunus cerasifera</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Tamaricaceae tamarix aphylla</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Araliaceae hedera glacier</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Apocynaceae rauvolfia caffra</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Moraceae Ficus microcarpa</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                            
+                           
+                                    <li>
+                                        <a href=""  >
+                                            <i class="fa fa-globe"></i>
+                                            <strong>INRA obtainings</strong>
+                                            
+                                        </a>
+
+                                        <ul>
+                                            
+                                    <li><a href="#"><i class="fa fa-globe"></i>Sterculiacaea
+                                                Brachychiton rupestris</a></li>
+                             
+                                    <li><a href="#"><i class="fa fa-globe"></i>Anacardiaceae schinus terebenthfolius</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Bignoceae spathodia campanulata</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Anacardiaceae schinus terebenthfolius</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>
+                                        Bignoniaceae spathodia campanulata</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Caesalpinaceae Bauhinia purpurea</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Strelitza</a></li>
+                                </ul>
+                            </li>
+                           
+                            <li>
+                                <a href=""  >
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Palm Grove</strong>
+                                    
+                                </a>
+                                <ul>
+                                    
+                                   
+        
+                                    <li><a href="https://www.w3schools.com/"><i class="fa fa-globe"></i>Arecaceae Hypophorbe verschaffeltil</a></li>
+                                    <li><a ><i class="fa fa-globe"></i>Arecacaeae Butia capitata</a></li>
+                                    <li><a ><i class="fa fa-globe"></i>Fabaceae Cercis seliquastrum</a></li>
+                                </ul>
+                            </li>
+                            
+                          
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>scent garden</strong>
+                                    
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Caesalpiniaceae Gledista triacanthos</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Rosaceae Raphiolepis indica</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Hibiscus Sandariffa ( carcadé)</a></li>
+
+                             
+                                </ul>
+                            </li>
+                           
+                            <li>
+                                <a href="" >
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Aromatic and medicinal plants</strong>
+                                    
+                                </a>
+                                
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Fabaceae wisteria</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Strelitziaceae strelitza Augusta</a></li>
+                               
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>anninier trees</strong>
+                                    
+                                </a>
+                                <ul>
+                                    
+        
+                                    <li><a href="#"><i class="fa fa-globe"></i>Oleaceae jasminum mesnyi</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>
+                                        Apocynaceae strophantus speciosus</a></li>
+                                
+                                    
+                                    
+                                </ul>
+                            </li>
+                           
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>pecan trees</strong>
+                            
+                                </a>
+                                <ul>
+                                    
+        
+                                    <li><a href="#"><i class="fa fa-globe"></i>Juglandaceae carya olivaeformis</a></li>
+                                    <li><a href="#"><i class="fa fa-globe"></i>
+                                        Moraceae ficus macrophylla</a></li>
+                                   
+                                    
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>Flowering Perennial garden</strong>
+                                    
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Moraceae Ficus microcarpa</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <i class="fa fa-globe"></i>
+                                    <strong>rare plants</strong>
+                                
+                                </a>
+                                <ul>
+                                    <li><a href="#"><i class="fa fa-globe"></i>Euphorbiaceae Acalypha wilkesana</a></li>
+                                    
+                                    
+                                    
+                                </ul>
+                            </li>
+                            
+                           
+                           
+                            
+                        </ul>
+                    </nav>
+                </div>
+          
+            </div>
+        </body>
+        </html>
+        
+ 
+    
+  
+ 
